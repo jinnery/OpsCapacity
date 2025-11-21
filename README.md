@@ -2,6 +2,12 @@
 
 一个为不同角色提供容量扩容决策支持的综合性报表系统。
 
+> 🎉 **首次使用**: 查看 [欢迎指南](./WELCOME.md) 5分钟快速上手
+> 
+> 📚 **文档导航**: 查看 [文档索引](./DOCS_INDEX.md) 了解所有可用文档和脚本
+> 
+> ⚡ **快速开始**: 阅读 [快速入门指南](./QUICKSTART.md) 一分钟启动系统
+
 ## 系统概述
 
 本系统为4个不同角色提供专门的容量扩容诊断报表：
@@ -65,20 +71,32 @@
 - Node.js 16+
 - npm 或 yarn
 
-### 安装依赖
+### 方式一：使用自动化脚本（推荐）
+
 ```bash
-# 安装后端依赖
+# 1. 运行安装脚本（首次使用）
+./setup.sh
+
+# 2. 启动开发服务器
+./start.sh
+```
+
+### 方式二：手动安装
+
+```bash
+# 1. 安装后端依赖
 npm install
 
-# 安装前端依赖
+# 2. 安装前端依赖
 cd client
 npm install
 cd ..
-```
 
-### 启动开发服务器
-```bash
-# 同时启动前后端服务器
+# 3. 创建环境配置文件
+cp .env.example .env
+cp client/.env.example client/.env
+
+# 4. 启动开发服务器
 npm run dev
 
 # 或者分别启动
@@ -89,6 +107,39 @@ npm run client  # 前端 (端口 3000)
 ### 访问应用
 - 前端应用: http://localhost:3000
 - 后端API: http://localhost:3001
+
+### 常见问题
+
+#### ❓ 端口被占用怎么办？
+```bash
+# 清理3001端口（后端）
+lsof -ti:3001 | xargs kill -9
+
+# 清理3000端口（前端）
+lsof -ti:3000 | xargs kill -9
+```
+
+#### ❓ 启动时报错 "Cannot find module"？
+```bash
+# 清理并重新安装依赖
+rm -rf node_modules client/node_modules
+rm package-lock.json client/package-lock.json
+./setup.sh
+```
+
+#### ❓ 需要配置数据库吗？
+不需要！系统默认使用模拟数据，无需配置数据库即可运行。如果您想连接真实数据库，请编辑 `.env` 文件中的数据库配置。
+
+#### ❓ 更多问题？
+查看详细的故障排除指南: [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+
+### 快速测试
+
+安装并启动后，运行快速测试脚本验证所有API端点：
+
+```bash
+./quick-test.sh
+```
 
 ## 📋 优先级划分
 
