@@ -39,6 +39,64 @@ export interface ComponentData {
   potentialRisks?: string[];
 }
 
+export interface CPUAnomalyMetrics {
+  avg_cpu: number;
+  p95_cpu: number;
+  latency_ms: number;
+  error_rate: number;
+}
+
+export interface RawDataSample {
+  timestamp: string;
+  cpu_usage: number;
+  latency: number;
+  errors: number;
+}
+
+export interface CPUAnomalyDetails {
+  hasAnomaly: boolean;
+  anomalyType: string;
+  daysToSaturation: number;
+  anomalyMark: string;
+  normalPeriod: CPUAnomalyMetrics;
+  anomalyPeriod: CPUAnomalyMetrics;
+  comparison: {
+    avgCpuIncrease: string;
+    p95CpuIncrease: string;
+    latencyIncrease: string;
+    errorRateIncrease: string;
+  };
+  rawDataSamples: RawDataSample[];
+}
+
+export interface ComponentDetailsResponse {
+  component: {
+    id: number;
+    name: string;
+    type: string;
+    currentUsageP95: number;
+    currentUsageP99: number;
+    isSaturated: boolean;
+    saturationSeverity: string;
+    daysToSaturation: number;
+    predictedSaturationDate: string;
+    priority: string;
+  };
+  cpuAnomalyDetails: CPUAnomalyDetails;
+  technicalDetails: {
+    expansionPlan: string;
+    workHours: number;
+    expectedImprovement: string;
+    steps: string[];
+  };
+  businessDetails: {
+    impact: string;
+    userImpact: string;
+    riskLevel: string;
+  };
+  verification: string[];
+}
+
 export interface WeeklyPlan {
   [key: string]: ComponentData[];
 }
@@ -72,7 +130,7 @@ export const capacityAPI = {
   },
 
   // Component Details
-  getComponentDetails: (componentId: string): Promise<any> => {
+  getComponentDetails: (componentId: string): Promise<ComponentDetailsResponse> => {
     return api.get(`/component/${componentId}`).then(response => response.data);
   }
 };

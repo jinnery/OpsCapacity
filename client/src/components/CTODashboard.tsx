@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { capacityAPI, ComponentData } from '../services/api';
 import PriorityBadge from './PriorityBadge';
 import CapacityIndicator from './CapacityIndicator';
+import CPUAnomalyDetails from './CPUAnomalyDetails';
 
 const CTODashboard: React.FC = () => {
   const [components, setComponents] = useState<ComponentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedComponentForCPUDetails, setSelectedComponentForCPUDetails] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,6 +88,43 @@ const CTODashboard: React.FC = () => {
                 <div className="metric-value">{component.workHours} 小时</div>
               </div>
             </div>
+            
+            <div style={{ 
+              marginTop: '1rem', 
+              padding: '1rem', 
+              backgroundColor: '#f0f8ff', 
+              borderLeft: '4px solid #3498db',
+              borderRadius: '4px'
+            }}>
+              <button
+                onClick={() => setSelectedComponentForCPUDetails({ id: component.id, name: component.componentName })}
+                style={{
+                  backgroundColor: '#3498db',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2980b9')}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3498db')}
+              >
+                📊 查看CPU异常详情
+              </button>
+            </div>
+
+            {selectedComponentForCPUDetails?.id === component.id && (
+              <div style={{ marginTop: '1rem' }}>
+                <CPUAnomalyDetails 
+                  componentId={component.id}
+                  componentName={component.componentName}
+                  onClose={() => setSelectedComponentForCPUDetails(null)}
+                />
+              </div>
+            )}
             
             <div style={{ marginTop: '1rem', textAlign: 'left' }}>
               <div className="metric-label">扩容方案</div>

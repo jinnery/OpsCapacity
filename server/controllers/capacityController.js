@@ -279,6 +279,21 @@ const getComponentDetails = (req, res) => {
       predictedSaturationDate: component.predicted_saturation_date,
       priority
     },
+    cpuAnomalyDetails: {
+      hasAnomaly: component.cpu_saturation_anomaly,
+      anomalyType: component.anomaly_type,
+      daysToSaturation: component.cpu_days_to_saturation,
+      anomalyMark: 'cpu_saturation_anomaly',
+      normalPeriod: component.normal_metrics,
+      anomalyPeriod: component.anomaly_metrics,
+      comparison: {
+        avgCpuIncrease: ((component.anomaly_metrics.avg_cpu - component.normal_metrics.avg_cpu) / component.normal_metrics.avg_cpu * 100).toFixed(1),
+        p95CpuIncrease: ((component.anomaly_metrics.p95_cpu - component.normal_metrics.p95_cpu) / component.normal_metrics.p95_cpu * 100).toFixed(1),
+        latencyIncrease: ((component.anomaly_metrics.latency_ms - component.normal_metrics.latency_ms) / component.normal_metrics.latency_ms * 100).toFixed(1),
+        errorRateIncrease: ((component.anomaly_metrics.error_rate - component.normal_metrics.error_rate) / component.normal_metrics.error_rate * 100).toFixed(1)
+      },
+      rawDataSamples: component.raw_data_samples
+    },
     technicalDetails: {
       expansionPlan: plan.solution,
       workHours: plan.workHours,

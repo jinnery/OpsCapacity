@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { capacityAPI, ComponentData } from '../services/api';
 import PriorityBadge from './PriorityBadge';
+import CPUAnomalyDetails from './CPUAnomalyDetails';
 
 const OpsEngineerDashboard: React.FC = () => {
   const [components, setComponents] = useState<ComponentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [selectedComponentForCPUDetails, setSelectedComponentForCPUDetails] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -162,6 +164,42 @@ const OpsEngineerDashboard: React.FC = () => {
               
               {isExpanded && (
                 <div style={{ marginTop: '1rem', textAlign: 'left' }}>
+                  <div style={{
+                    marginBottom: '1.5rem',
+                    padding: '1rem',
+                    backgroundColor: '#f0f8ff',
+                    borderLeft: '4px solid #3498db',
+                    borderRadius: '4px'
+                  }}>
+                    <button
+                      onClick={() => setSelectedComponentForCPUDetails({ id: component.id, name: component.componentName })}
+                      style={{
+                        backgroundColor: '#3498db',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.75rem 1.5rem',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        transition: 'background-color 0.3s'
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2980b9')}
+                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3498db')}
+                    >
+                      📊 查看CPU异常详情
+                    </button>
+                  </div>
+
+                  {selectedComponentForCPUDetails?.id === component.id && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <CPUAnomalyDetails
+                        componentId={component.id}
+                        componentName={component.componentName}
+                        onClose={() => setSelectedComponentForCPUDetails(null)}
+                      />
+                    </div>
+                  )}
+
                   <div className="expansion-steps">
                     <div className="metric-label">🔧 具体执行步骤</div>
                     <ol>
@@ -170,7 +208,7 @@ const OpsEngineerDashboard: React.FC = () => {
                       ))}
                     </ol>
                   </div>
-                  
+
                   <div style={{ marginTop: '1.5rem' }}>
                     <div className="metric-label">✅ 验证方法</div>
                     <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
@@ -181,7 +219,7 @@ const OpsEngineerDashboard: React.FC = () => {
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div style={{ marginTop: '1.5rem' }}>
                     <div className="metric-label">⚠️ 可能遇到的问题</div>
                     <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
@@ -192,11 +230,11 @@ const OpsEngineerDashboard: React.FC = () => {
                       ))}
                     </ul>
                   </div>
-                  
-                  <div style={{ 
-                    marginTop: '1.5rem', 
-                    padding: '1rem', 
-                    backgroundColor: '#ecf0f1', 
+
+                  <div style={{
+                    marginTop: '1.5rem',
+                    padding: '1rem',
+                    backgroundColor: '#ecf0f1',
                     borderRadius: '8px',
                     textAlign: 'center'
                   }}>

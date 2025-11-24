@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { capacityAPI, OpsDirectorData, ComponentData } from '../services/api';
 import PriorityBadge from './PriorityBadge';
+import CPUAnomalyDetails from './CPUAnomalyDetails';
 
 const OpsDirectorDashboard: React.FC = () => {
   const [data, setData] = useState<OpsDirectorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedComponentForCPUDetails, setSelectedComponentForCPUDetails] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,6 +106,44 @@ const OpsDirectorDashboard: React.FC = () => {
                     <h4 style={{ margin: 0, color: '#2c3e50' }}>{component.componentName}</h4>
                     <PriorityBadge priority={component.priority} />
                   </div>
+
+                  <div style={{
+                    padding: '0.75rem',
+                    backgroundColor: '#f0f8ff',
+                    borderLeft: '4px solid #3498db',
+                    borderRadius: '4px',
+                    marginBottom: '1rem'
+                  }}>
+                    <button
+                      onClick={() => setSelectedComponentForCPUDetails({ id: component.id, name: component.componentName })}
+                      style={{
+                        backgroundColor: '#3498db',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.4rem 0.75rem',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem',
+                        transition: 'background-color 0.3s'
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2980b9')}
+                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3498db')}
+                    >
+                      📊 异常详情
+                    </button>
+                  </div>
+
+                  {selectedComponentForCPUDetails?.id === component.id && (
+                    <div style={{ marginBottom: '1rem' }}>
+                      <CPUAnomalyDetails
+                        componentId={component.id}
+                        componentName={component.componentName}
+                        onClose={() => setSelectedComponentForCPUDetails(null)}
+                      />
+                    </div>
+                  )}
+
                   <div className="card-content">
                     <div className="metric">
                       <div className="metric-label">饱和时间</div>
