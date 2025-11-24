@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { capacityAPI, ComponentData } from '../services/api';
+import CPUAnomalyDetails from './CPUAnomalyDetails';
 
 const CEODashboard: React.FC = () => {
   const [components, setComponents] = useState<ComponentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedComponentForCPUDetails, setSelectedComponentForCPUDetails] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +89,43 @@ const CEODashboard: React.FC = () => {
                 </span>
               </div>
               
+              <div style={{ 
+                marginBottom: '1rem',
+                padding: '1rem', 
+                backgroundColor: '#f0f8ff', 
+                borderLeft: '4px solid #3498db',
+                borderRadius: '4px'
+              }}>
+                <button
+                  onClick={() => setSelectedComponentForCPUDetails({ id: component.id, name: component.componentName })}
+                  style={{
+                    backgroundColor: '#3498db',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                    transition: 'background-color 0.3s'
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2980b9')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3498db')}
+                >
+                  📊 查看CPU异常详情
+                </button>
+              </div>
+
+              {selectedComponentForCPUDetails?.id === component.id && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <CPUAnomalyDetails 
+                    componentId={component.id}
+                    componentName={component.componentName}
+                    onClose={() => setSelectedComponentForCPUDetails(null)}
+                  />
+                </div>
+              )}
+
               <div style={{ textAlign: 'left', marginBottom: '1rem' }}>
                 <div className="metric-label">业务影响</div>
                 <div style={{ marginTop: '0.5rem', color: '#2c3e50', fontWeight: 'bold' }}>
@@ -148,6 +187,43 @@ const CEODashboard: React.FC = () => {
               </div>
             </div>
             
+            <div style={{
+              padding: '1rem',
+              backgroundColor: '#f0f8ff',
+              borderLeft: '4px solid #3498db',
+              borderRadius: '4px',
+              marginBottom: '1rem'
+            }}>
+              <button
+                onClick={() => setSelectedComponentForCPUDetails({ id: component.id, name: component.componentName })}
+                style={{
+                  backgroundColor: '#3498db',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2980b9')}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3498db')}
+              >
+                📊 CPU异常详情
+              </button>
+            </div>
+
+            {selectedComponentForCPUDetails?.id === component.id && (
+              <div style={{ marginBottom: '1rem' }}>
+                <CPUAnomalyDetails
+                  componentId={component.id}
+                  componentName={component.componentName}
+                  onClose={() => setSelectedComponentForCPUDetails(null)}
+                />
+              </div>
+            )}
+
             <div className="card-content">
               <div className="metric">
                 <div className="metric-label">业务影响</div>
@@ -155,23 +231,23 @@ const CEODashboard: React.FC = () => {
                   {component.businessImpact}
                 </div>
               </div>
-              
+
               <div className="metric">
                 <div className="metric-label">用户影响</div>
                 <div className="metric-value" style={{ fontSize: '0.9rem' }}>
                   {component.userImpact}
                 </div>
               </div>
-              
+
               <div className="metric">
                 <div className="metric-label">截止时间</div>
                 <div className="metric-value">{component.deadline}</div>
               </div>
-              
+
               <div className="metric">
                 <div className="metric-label">决策建议</div>
-                <div className="metric-value" style={{ 
-                  color: component.recommendation === '【必须立即扩容】' ? '#e74c3c' : 
+                <div className="metric-value" style={{
+                  color: component.recommendation === '【必须立即扩容】' ? '#e74c3c' :
                          component.recommendation === '【建议近期扩容】' ? '#f39c12' : '#27ae60'
                 }}>
                   {component.recommendation}
